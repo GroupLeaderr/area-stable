@@ -402,13 +402,33 @@ class TaskConfig:
                         outfile = ospath.join(self.newDir, file)
                         await _run(dirpath, video_file, outfile, clean_metadata)
 
+    async def download_file(url, download_path):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    with open(download_path, 'wb') as f:
+                        f.write(await response.read())
+                else:
+                    raise Exception(f"Failed to download file: {response.status}")
+
     async def add_attachment(self, path: str, gid: str):
-        print("entering to the attachment section.............!!!!!!!!!!!!!!")
         # Check if there's an attachment specified in the user dictionary
         if not (attach := self.user_dict.get('attachment')):
             LOGGER.warning("No attachment found in user_dict.")
             return
-        
+
+        # If the attachment is a URL, download it first
+        if attach.startswith("http://") or attach.startswith("https://"):
+            try:
+                filename = os.path.basename(attach)
+                local_attach_path = os.path.join("/tmp", filename)  # Save to a temp directory
+                await download_file(attach, local_attach_path)
+                attach = local_attach_path
+            except Exception as e:
+                LOGGER.error(f"Failed to download attachment: {e}")
+                return
+
+        # Check if the attachment file exists locally
         if not ospath.exists(attach):
             LOGGER.error("Attachment file does not exist: %s", attach)
             return
