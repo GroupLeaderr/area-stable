@@ -405,6 +405,11 @@ class TaskConfig:
     async def add_attachment(self, path: str, gid: str):
         # Check if there's an attachment specified in the user dictionary
         if not (attach := self.user_dict.get('attachment')):
+            LOGGER.warning("No attachment found in user_dict.")
+            return
+        
+        if not ospath.exists(attach):
+            LOGGER.error("Attachment file does not exist: %s", attach)
             return
 
         # Create a new directory for the output files
@@ -427,17 +432,17 @@ class TaskConfig:
                 '-c', 'copy', '-map', '0', outfile, '-y'
             ]
 
-            self.suproc = await create_subprocess_exec(*cmd, stderr=PIPE)
-            code = await self.suproc.wait()
+            LOGGER.debug(f"Running FFmpeg command: {' '.join(cmd)}")
+            self.suproc = await create_subprocess_exec(*cmd, stdout=PIPE, stderr=PIPE)
+            stdout, stderr = await self.suproc.communicate()
 
-            if code == 0:
+            if self.suproc.returncode == 0:
                 await clean_target(media_file)  # Clean up the original file
                 self.seed = False
                 await move(outfile, base_dir)  # Move the updated file to the base directory
                 LOGGER.info(f"Attachment added successfully: {attach}")
             else:
-                stderr_output = await self.suproc.stderr.read()
-                LOGGER.error('%s. Adding Attachment failed, Path %s', stderr_output.decode(), media_file)
+                LOGGER.error('Adding Attachment failed. FFmpeg error: %s', stderr.decode())
                 await clean_target(outfile)  # Clean up the failed output file
 
         # Iterate over files in the specified path
