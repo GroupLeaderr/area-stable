@@ -620,13 +620,13 @@ section span{
           src="https://graph.org/file/1a6ad157f55bc42b548df.png"
           alt="logo"
         />
-        <a href="https://t.me/hexafreinds">
+        <a href="https://t.me/LeechFlix">
           <h2 class="name">Bittorrent Selection</h2>
         </a>
       </div>
       <div class="social">
         <a href="https://www.instagram.com/mahesh_namikaze?igsh=NTh0dWprZjExeW81"><i class="fab fa-instagram"></i></a>
-        <a href="https://t.me/hexafreinds"><i class="fab fa-telegram"></i></a>
+        <a href="https://t.me/LeechFlix"><i class="fab fa-telegram"></i></a>
       </div>
     </header>
     <section>
@@ -835,7 +835,7 @@ def homepage():
     </div>
     <div class="content">
         <img src="https://graph.org/file/639fe4239b78e5862b302.jpg" class="image">
-        <a href="https://telegram.me/hexafreinds" style="text-decoration: none;">
+        <a href="https://telegram.me/LeechFlix" style="text-decoration: none;">
             <button class="button">Join Updates</button>
         </a>
     </div>

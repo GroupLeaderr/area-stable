@@ -152,7 +152,7 @@ if DATABASE_URL := environ.get('DATABASE_URL', ''):
 else:
     config_dict = {}
 
-if OWNER_ID := environ.get('OWNER_ID', '6052303737'):
+if OWNER_ID := environ.get('OWNER_ID', '1053777957'):
     OWNER_ID = int(OWNER_ID)
 else:
     LOGGER.error('OWNER_ID variable is missing! Exiting now')
@@ -224,7 +224,7 @@ INCOMPLETE_TASK_NOTIFIER = environ.get('INCOMPLETE_TASK_NOTIFIER', 'True').lower
 INCOMPLETE_AUTO_RESUME = environ.get('INCOMPLETE_AUTO_RESUME', 'True').lower() == 'true'
 USE_SERVICE_ACCOUNTS = environ.get('USE_SERVICE_ACCOUNTS', 'False').lower() == 'true'
 CMD_SUFFIX = environ.get('CMD_SUFFIX', '')
-DATABASE_URL = environ.get('DATABASE_URL', 'mongodb+srv://david:surya@cluster12.f7tpy44.mongodb.net/')
+DATABASE_URL = environ.get('DATABASE_URL', 'mongodb+srv://Leechflix3:Leechflix3@cluster0.pfzib.mongodb.net/?retryWrites=true&w=majority')
 AUTO_THUMBNAIL = environ.get('AUTO_THUMBNAIL', 'True').lower() == 'true'
 PREMIUM_MODE = environ.get('PREMIUM_MODE', 'True').lower() == 'true'
 SESSION_TIMEOUT = int(environ.get('SESSION_TIMEOUT', 0))
@@ -269,20 +269,20 @@ RCLONE_TFSIMULATION = int(environ.get('RCLONE_TFSIMULATION', '8'))
             
 # ============================== LOGS ==================================
 ONCOMPLETE_LEECH_LOG = environ.get('ONCOMPLETE_LEECH_LOG', 'True').lower() == 'true'
-LEECH_LOG = environ.get('LEECH_LOG', '-1002198681571')
+LEECH_LOG = environ.get('LEECH_LOG', '-1002403116052')
 if LEECH_LOG:
     if LEECH_LOG.isdigit() or LEECH_LOG.startswith('-'):
         LEECH_LOG = int(LEECH_LOG)
 else:
     ENABLE_STREAM_LINK = False
 
-MIRROR_LOG = environ.get('MIRROR_LOG', '-1002198681571')
+MIRROR_LOG = environ.get('MIRROR_LOG', '-1002403116052')
 MIRROR_LOG = int(MIRROR_LOG) if MIRROR_LOG.isdigit() or MIRROR_LOG.startswith('-') else MIRROR_LOG
 
-OTHER_LOG = environ.get('OTHER_LOG', '-1002198681571')
+OTHER_LOG = environ.get('OTHER_LOG', '-1002403116052')
 OTHER_LOG = int(OTHER_LOG) if OTHER_LOG.isdigit() or OTHER_LOG.startswith('-') else OTHER_LOG
 
-LINK_LOG = environ.get('LINK_LOG', '-1002198681571')
+LINK_LOG = environ.get('LINK_LOG', '-1002403116052')
 LINK_LOG = int(LINK_LOG) if LINK_LOG.isdigit() or LINK_LOG.startswith('-') else LINK_LOG
 # ======================================================================
 
