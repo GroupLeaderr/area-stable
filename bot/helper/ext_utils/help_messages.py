@@ -16,7 +16,7 @@ Timeout: 60s.</i>
 '''
     DUMP = '''
 <b>DUMP SETTING</b>\n
-Example: <code>-1002403116052</code> or <code>username</code>\n
+Example: <code>-1001610679270</code> or <code>username</code>\n
 Timeout: 60s.</i>
 '''
     RCP = '''
