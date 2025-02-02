@@ -402,6 +402,51 @@ class TaskConfig:
                         outfile = ospath.join(self.newDir, file)
                         await _run(dirpath, video_file, outfile, clean_metadata)
 
+    async def add_attachment(self, path: str, gid: str):
+        # Check if there's an attachment specified in the user dictionary
+        if not (attach := self.user_dict.get('attachment')):
+            return
+
+        # Create a new directory for the output files
+        self.newDir = f'{path}10000'
+        await makedirs(self.newDir, exist_ok=True)
+
+        async def _run(base_dir: str, media_file: str, outfile: str):
+            # Determine MIME type based on attachment extension
+            attachment_ext = attach.split(".")[-1].lower()
+            mime_type = {
+                "jpg": "image/jpeg",
+                "jpeg": "image/jpeg",
+                "png": "image/png",
+            }.get(attachment_ext, "application/octet-stream")
+
+            # FFmpeg command for adding the attachment
+            cmd = [
+                bot_cache['pkgs'][2], '-hide_banner', '-ignore_unknown', '-i', media_file,
+                '-attach', attach, '-metadata:s:t', f'mimetype={mime_type}',
+                '-c', 'copy', '-map', '0', outfile, '-y'
+            ]
+
+            self.suproc = await create_subprocess_exec(*cmd, stderr=PIPE)
+            code = await self.suproc.wait()
+
+            if code == 0:
+                await clean_target(media_file)  # Clean up the original file
+                self.seed = False
+                await move(outfile, base_dir)  # Move the updated file to the base directory
+                LOGGER.info(f"Attachment added successfully: {attach}")
+            else:
+                stderr_output = await self.suproc.stderr.read()
+                LOGGER.error('%s. Adding Attachment failed, Path %s', stderr_output.decode(), media_file)
+                await clean_target(outfile)  # Clean up the failed output file
+
+        # Iterate over files in the specified path
+        for dirpath, _, files in await sync_to_async(walk, path):
+            for file_ in files:
+                media_file = ospath.join(dirpath, file_)
+                outfile = ospath.join(self.newDir, file_)
+                await _run(self.newDir, media_file, outfile)
+
     async def proceedExtract(self, dl_path: str, size: int, gid: str):
         pswd = self.extract if isinstance(self.extract, str) else ''
         try:
@@ -469,11 +514,13 @@ class TaskConfig:
 
         up_path = await self.preName(up_path)
         await self.editMetadata(up_path, gid)
+        await self.add_attachment(up_path, gid)
         return up_path
 
     async def proceedCompress(self, dl_path: str, size: int, gid: str):
         dl_path = await self.preName(dl_path)
         await self.editMetadata(dl_path, gid)
+        await self.add_attachment(dl_path, gid)
         self.name = ospath.basename(dl_path)
         zipmode = self.user_dict.get('zipmode', 'zfolder')
         zfpart = ''

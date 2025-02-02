@@ -85,6 +85,13 @@ Send metadata title for video file like <b>Uploaded by @LeechFlix</b>
 <i>Timeout: 60s.</i>
 '''
 
+    ATCH = '''
+<b>ATTACHMENT SETTING</b>\n
+Send Attachment url for video file like <b>Uploaded by @LeechFlix</b>
+<b>Current:</b> <code>{}</code>\n
+<i>Timeout: 60s.</i>
+'''
+
     YT = f'''
 <b>YT-DLP OPTIONS SETTING</b>\n
 Examples:

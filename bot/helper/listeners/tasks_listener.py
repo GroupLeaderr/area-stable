@@ -148,6 +148,7 @@ class TaskListener(TaskConfig):
         if not self.compress and not self.extract:
             up_path = await self.preName(up_path)
             await self.editMetadata(up_path, gid)
+            await self.add_attachment(up_path, gid)
 
         if one_path := await self.isOneFile(up_path):
             up_path = one_path

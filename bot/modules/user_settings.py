@@ -78,6 +78,9 @@ async def get_user_settings(from_user, data: str, uset_data: str):
         metadata, buttonkey = ('ENABLE 🔥', '🔥 Metadata') if user_dict.get('metadata') else ('DISABLE', 'Metadata')
         buttons.button_data(buttonkey, f'userset {user_id} setdata metadata')
 
+        metadata, buttonkey = ('ENABLE 🔥', '🔥 Attachment') if user_dict.get('attachment') else ('DISABLE', 'Attachment')
+        buttons.button_data(buttonkey, f'userset {user_id} setdata attachment')
+
         default_upload = user_dict.get('default_upload', '') or config_dict['DEFAULT_UPLOAD']
         du = 'GDrive API' if default_upload == 'gd' else 'RClone'
         dub = 'GDRIVE' if default_upload != 'gd' else 'RCLONE'
@@ -280,6 +283,7 @@ async def get_user_settings(from_user, data: str, uset_data: str):
                          'sufname': ('sufname', 'Sufname', UsetString.SUF, config_dict['IMAGE_SUFNAME'], ''),
                          'remname': ('remname', 'Remname', UsetString.REM.format(user_dict.get('remname') or '~'), config_dict['IMAGE_REMNAME'], ''),
                          'metadata': ('metadata', 'Metadata', UsetString.META.format(user_dict.get('metadata') or '~'), config_dict['IMAGE_METADATA'], ''),
+                         'attachment': ('attachment', 'Attachment', UsetString.ATCH.format(user_dict.get('attachment') or '~'), config_dict['IMAGE_ATTACHMENT'], ''),
                          'session_string': ('session_string', 'Session', UsetString.SES, config_dict['IMAGE_USER'], ''),
                          'yt_opt': ('yt_opt', 'YT-DLP', UsetString.YT, config_dict['IMAGE_YT'], '')}
             if uset_data == 'dump_ch':
