@@ -368,37 +368,58 @@ class TaskConfig:
         if attach:
             # If the attachment is a URL, download it first
             if attach.startswith("http://") or attach.startswith("https://"):
-                try:
-                    filename = os.path.basename(attach)
-                    local_attach_path = os.path.join("/tmp", filename)  # Save to a temp directory
-                    async with aiohttp.ClientSession() as session:
-                        async with session.get(attach) as response:
-                            if response.status == 200:
-                                async with aiofiles.open(local_attach_path, mode='wb') as f:
-                                    await f.write(await response.read())
-                                attach = local_attach_path
-                            else:
-                                raise Exception(f"Failed to download file: HTTP {response.status}")
-                except Exception as e:
-                    LOGGER.error(f"Failed to download attachment: {e}")
-                    attach = None  # Set to None if download fails
+                max_retries = 3
+                for attempt in range(max_retries):
+                    try:
+                        # Rename the downloaded file to 'attachment.jpg'
+                        local_attach_path = os.path.join("/tmp", "attachment.jpg")
+                        async with aiohttp.ClientSession() as session:
+                            async with session.get(attach) as response:
+                                if response.status == 200:
+                                    async with aiofiles.open(local_attach_path, mode='wb') as f:
+                                        await f.write(await response.read())
+                                    attach = local_attach_path
+                                    break
+                                else:
+                                    raise Exception(f"Failed to download file: HTTP {response.status}")
+                    except Exception as e:
+                        LOGGER.error(f"Attempt {attempt + 1} failed to download attachment: {e}")
+                        if attempt + 1 == max_retries:
+                            LOGGER.error("Max retries reached. Proceeding without attachment.")
+                            attach = None
 
             # Check if the attachment file exists locally
             if attach and not ospath.exists(attach):
                 LOGGER.error("Attachment file does not exist: %s", attach)
                 attach = None
 
+        # Create a new directory for the output files
         self.newDir = f'{self.dir}10000'
         await makedirs(self.newDir, exist_ok=True)
 
         async def _run(base_dir: str, video_file: str, outfile: str, clean_metadata: bool=False):
-            cmd = [FFMPEG_NAME, '-hide_banner', '-ignore_unknown', '-loglevel', 'error', '-i', video_file,
-                '-fflags', '+bitexact', '-flags:v', '+bitexact', '-flags:a', '+bitexact']
+            cmd = [
+                FFMPEG_NAME, '-hide_banner', '-ignore_unknown', '-loglevel', 'error', '-i', video_file
+            ]
 
             # Add metadata
             if not clean_metadata:
-                cmd.extend(['-metadata', f'title={metadata}', '-metadata:s:v',
-                            f'title={metadata}', '-metadata:s:a', f'title={metadata}', '-metadata:s:s', f'title={metadata}'])
+                cmd.extend([
+                    '-metadata', f'title={metadata}',
+                    '-metadata:s:v', f'title={metadata}',
+                    '-metadata:s:a', f'title={metadata}',
+                    '-metadata:s:s', f'title={metadata}'
+                ])
+
+            # Remove unwanted metadata fields
+            cmd.extend([
+                '-metadata', 'Description=',
+                '-metadata', 'Copyright=',
+                '-metadata', 'Comment=',
+                '-metadata', 'AUTHOR=',
+                '-metadata', 'SUMMARY=',
+                '-metadata', 'WEBSITE='
+            ])
 
             # Add attachment if available
             if attach:
