@@ -400,6 +400,7 @@ IMAGE_LOGS = environ.get('IMAGE_LOGS', 'https://graph.org/file/3d3d4ff6da76a7ba9
 IMAGE_MDL = environ.get('IMAGE_MDL', 'https://graph.org/file/bf022a38e6e604314bcc0-b52c3c257d5c95634a.jpg')
 IMAGE_MEDINFO = environ.get('IMAGE_MEDINFO', 'https://graph.org/file/01d4c038e7ffafa2d7b01-ad60baee9fa8647c44.jpg')
 IMAGE_METADATA = environ.get('IMAGE_METADATA', 'https://graph.org/file/9257f155ec587cc708e03-452d86c7775776f5d4.jpg')
+IMAGE_ATTACHMENT = environ.get('IMAGE_ATTACHMENT', 'https://graph.org/file/9257f155ec587cc708e03-452d86c7775776f5d4.jpg')
 IMAGE_MONO = environ.get('IMAGE_MONO', 'https://graph.org/file/1136d3236f65922811cf5-305a6d4fc7bbbd73bc.jpg')
 IMAGE_NORMAL = environ.get('IMAGE_NORMAL', 'https://graph.org/file/d959822219c176e3f8c8e-408da582f04a89f846.jpg')
 IMAGE_OWNER = environ.get('IMAGE_OWNER', 'https://graph.org/file/2748a01faa27b6a6877e1-d6fe36073bd672ab8d.jpg')
@@ -656,6 +657,7 @@ config_dict = {'BOT_TOKEN': BOT_TOKEN,
                'IMAGE_MDL': IMAGE_MDL,
                'IMAGE_MEDINFO': IMAGE_MEDINFO,
                'IMAGE_METADATA': IMAGE_METADATA,
+               'IMAGE_ATTACHMENT': IMAGE_ATTACHMENT,
                'IMAGE_MONO': IMAGE_MONO,
                'IMAGE_NORMAL': IMAGE_NORMAL,
                'IMAGE_OWNER': IMAGE_OWNER,

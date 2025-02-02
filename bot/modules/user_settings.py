@@ -325,6 +325,7 @@ async def get_user_settings(from_user, data: str, uset_data: str):
                         'sufname': (UsetString.SUF, config_dict['IMAGE_SUFNAME']),
                         'remname': (UsetString.REM.format(user_dict.get('remname') or '~'), config_dict['IMAGE_REMNAME']),
                         'metadata': (UsetString.META.format(user_dict.get('metadata') or '~'), config_dict['IMAGE_METADATA']),
+                        'attachment': (UsetString.META.format(user_dict.get('attachment') or '~'), config_dict['IMAGE_ATTACHMENT']),
                         'session_string': (UsetString.SES, config_dict['IMAGE_USER']),
                         'yt_opt': (UsetString.YT, config_dict['IMAGE_YT'])}
         text, image = prepare_dict[uset_data]

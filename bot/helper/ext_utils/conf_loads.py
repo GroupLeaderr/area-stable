@@ -80,6 +80,7 @@ default_values = {'AUTO_DELETE_MESSAGE_DURATION': 30,
                   'IMAGE_MDL': 'https://telegra.ph/file/89bdb927fc0f66df6b256.png',
                   'IMAGE_MEDINFO': 'https://graph.org/file/62b0667c1ebb0a2f28f82.png',
                   'IMAGE_METADATA': 'https://telegra.ph/file/5159ed1c1cf34b6e8297b.png',
+                  'IMAGE_ATTACHMENT': 'https://graph.org/file/4923724fea2d858b6eb1e.png',
                   'IMAGE_MONO': 'https://graph.org/file/b7c1ebd3ff72ef262af4c.png',
                   'IMAGE_NORMAL': 'https://graph.org/file/e9786dbca02235e9a6899.png',
                   'IMAGE_OWNER': 'https://graph.org/file/7d3c014629529d26f9587.png',
@@ -357,6 +358,7 @@ async def load_config():
     IMAGE_MDL = environ.get('IMAGE_MDL', 'https://telegra.ph/file/89bdb927fc0f66df6b256.png')
     IMAGE_MEDINFO = environ.get('IMAGE_MEDINFO', 'https://graph.org/file/62b0667c1ebb0a2f28f82.png')
     IMAGE_METADATA = environ.get('IMAGE_METADATA', 'https://telegra.ph/file/5159ed1c1cf34b6e8297b.png')
+    MAGE_ATTACHMENT = environ.get('IMAGE_ATTACHMENT', 'https://graph.org/file/e9786dbca02235e9a6899.png')
     IMAGE_MONO = environ.get('IMAGE_MONO', 'https://graph.org/file/b7c1ebd3ff72ef262af4c.png')
     IMAGE_NORMAL = environ.get('IMAGE_NORMAL', 'https://graph.org/file/e9786dbca02235e9a6899.png')
     IMAGE_OWNER = environ.get('IMAGE_OWNER', 'https://graph.org/file/7d3c014629529d26f9587.png')
@@ -623,6 +625,7 @@ async def load_config():
                         'IMAGE_MDL': IMAGE_MDL,
                         'IMAGE_MEDINFO': IMAGE_MEDINFO,
                         'IMAGE_METADATA': IMAGE_METADATA,
+                        'IMAGE_ATTACHMENT': IMAGE_ATTACHMENT,
                         'IMAGE_MONO': IMAGE_MONO,
                         'IMAGE_NORMAL': IMAGE_NORMAL,
                         'IMAGE_OWNER': IMAGE_OWNER,
