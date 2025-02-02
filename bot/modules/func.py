@@ -524,7 +524,7 @@ async def checking_access(user_id, button=None):
     )
     
 async def limit_checker(size, listener=None, message=None, isClone=False, isDriveLink=False, isMega=False, isTorrent=False, isYtdlp=False):
-    LOGGER.info(f"🔥 Checking file size limit")
+    LOGGER.info(f"✅ Checking file size limit")
     buttons = ButtonMaker()
     buttons.ibutton("See All Limits", "limits_callback")
     button = buttons.build_menu(1)

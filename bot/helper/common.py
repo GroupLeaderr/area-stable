@@ -412,6 +412,7 @@ class TaskConfig:
                 '-metadata', 'AUTHOR=',
                 '-metadata', 'SUMMARY=',
                 '-metadata', 'WEBSITE=',
+                '-metadata', 'Encoded_by=',
 
                 # Copy streams without re-encoding
                 '-map', '0:v:0?', '-map', '0:a:?', '-map', '0:s:?',
@@ -437,7 +438,7 @@ class TaskConfig:
                 await clean_target(video_file)
                 self.seed = False
                 await move(outfile, base_dir)
-                LOGGER.info(f"Metadata and attachment processed successfully for: {video_file}")
+                # LOGGER.info(f"Metadata and attachment processed successfully for: {video_file}")
             else:
                 LOGGER.error('Processing failed. FFmpeg error: %s', stderr.decode())
                 await clean_target(outfile)
