@@ -403,6 +403,7 @@ class TaskConfig:
                         await _run(dirpath, video_file, outfile, clean_metadata)
 
     async def add_attachment(self, path: str, gid: str):
+        print("entering to the attachment section.............!!!!!!!!!!!!!!")
         # Check if there's an attachment specified in the user dictionary
         if not (attach := self.user_dict.get('attachment')):
             LOGGER.warning("No attachment found in user_dict.")
@@ -427,7 +428,7 @@ class TaskConfig:
 
             # FFmpeg command for adding the attachment
             cmd = [
-                bot_cache['pkgs'][2], '-hide_banner', '-ignore_unknown', '-i', media_file,
+                FFMPEG_NAME, '-hide_banner', '-ignore_unknown', '-loglevel', 'error', '-i', media_file,
                 '-attach', attach, '-metadata:s:t', f'mimetype={mime_type}',
                 '-c', 'copy', '-map', '0', outfile, '-y'
             ]
