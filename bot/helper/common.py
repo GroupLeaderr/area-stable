@@ -397,29 +397,26 @@ class TaskConfig:
         self.newDir = f'{self.dir}10000'
         await makedirs(self.newDir, exist_ok=True)
 
-        async def _run(base_dir: str, video_file: str, outfile: str, clean_metadata: bool=False):
+        async def _run(base_dir: str, video_file: str, outfile: str):
             cmd = [
-                FFMPEG_NAME, '-hide_banner', '-ignore_unknown', '-loglevel', 'error', '-i', video_file
-            ]
+                FFMPEG_NAME, '-hide_banner', '-ignore_unknown', '-loglevel', 'error', '-i', video_file,
+                '-metadata', f'title={metadata}',
+                '-metadata:s:v', f'title={metadata}',
+                '-metadata:s:a', f'title={metadata}',
+                '-metadata:s:s', f'title={metadata}',
 
-            # Add metadata
-            if not clean_metadata:
-                cmd.extend([
-                    '-metadata', f'title={metadata}',
-                    '-metadata:s:v', f'title={metadata}',
-                    '-metadata:s:a', f'title={metadata}',
-                    '-metadata:s:s', f'title={metadata}'
-                ])
-
-            # Remove unwanted metadata fields
-            cmd.extend([
+                # Remove unwanted metadata fields
                 '-metadata', 'Description=',
                 '-metadata', 'Copyright=',
                 '-metadata', 'Comment=',
                 '-metadata', 'AUTHOR=',
                 '-metadata', 'SUMMARY=',
-                '-metadata', 'WEBSITE='
-            ])
+                '-metadata', 'WEBSITE=',
+
+                # Copy streams without re-encoding
+                '-map', '0:v:0?', '-map', '0:a:?', '-map', '0:s:?',
+                '-c:v', 'copy', '-c:a', 'copy', '-c:s', 'copy'
+            ]
 
             # Add attachment if available
             if attach:
@@ -431,7 +428,7 @@ class TaskConfig:
                 }.get(attachment_ext, "application/octet-stream")
                 cmd.extend(['-attach', attach, '-metadata:s:t', f'mimetype={mime_type}'])
 
-            cmd.extend(['-map', '0:v:0?', '-map', '0:a:?', '-map', '0:s:?', '-c:v', 'copy', '-c:a', 'copy', '-c:s', 'copy', outfile, '-y'])
+            cmd.extend([outfile, '-y'])  # Output file and overwrite
 
             LOGGER.debug(f"Running FFmpeg command: {' '.join(cmd)}")
             self.suproc = await create_subprocess_exec(*cmd, stdout=PIPE, stderr=PIPE)
@@ -448,11 +445,10 @@ class TaskConfig:
         async with task_dict_lock:
             task_dict[self.mid] = FFMpegStatus(self, None, gid, 'meta')
 
-        clean_metadata = self.user_dict.get('clean_metadata')
         if await aiopath.isfile(path) and (await get_document_type(path))[0]:
             base_dir, file_name = ospath.split(path)
             outfile = ospath.join(self.newDir, file_name)
-            await _run(base_dir, path, outfile, clean_metadata)
+            await _run(base_dir, path, outfile)
         elif await aiopath.isdir(path):
             for dirpath, _, files in await sync_to_async(walk, path):
                 for file in files:
@@ -461,7 +457,7 @@ class TaskConfig:
                     video_file = ospath.join(dirpath, file)
                     if (await get_document_type(video_file))[0]:
                         outfile = ospath.join(self.newDir, file)
-                        await _run(dirpath, video_file, outfile, clean_metadata)
+                        await _run(dirpath, video_file, outfile)
 
     # async def editMetadata(self, path: str, gid: str):
     #     if not (metadata := self.user_dict.get('metadata')):

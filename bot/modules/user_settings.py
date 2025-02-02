@@ -289,9 +289,9 @@ async def get_user_settings(from_user, data: str, uset_data: str):
             if uset_data == 'dump_ch':
                 log_title = user_dict.get('log_title')
                 buttons.button_data('🔥 Log Title' if log_title else 'Log Title', f'userset {user_id} setdata dump_ch {not log_title}')
-            elif uset_data == 'metadata':
-                clean_meta = user_dict.get('clean_metadata')
-                buttons.button_data('🔥 Clean' if clean_meta else '🔥 Overwrite', f'userset {user_id} setdata metadata {not clean_meta}')
+            # elif uset_data == 'metadata':
+            #     clean_meta = user_dict.get('clean_metadata')
+            #     buttons.button_data('🔥 Clean' if clean_meta else '🔥 Overwrite', f'userset {user_id} setdata metadata {not clean_meta}')
 
             key, butkey, text, image, qdata = uset_dict[uset_data]
             if user_dict.get(key) or key == 'yt_opt' and config_dict['YT_DLP_OPTIONS']:
@@ -436,7 +436,7 @@ async def edit_user_settings(client: Client, query: CallbackQuery):
             handler_dict[user_id] = False
             await query.answer()
             if data[3] in ('dump_ch', 'metadata') and len(data) == 5:
-                key = 'log_title' if data[3] == 'dump_ch' else 'clean_metadata'
+                key = 'log_title' if data[3] == 'dump_ch' else 'metadata'
                 await update_user_ldata(user_id, key, literal_eval(data[4]))
             await update_user_settings(query, 'setdata', data[3])
         case 'gd' | 'rc' as value:
