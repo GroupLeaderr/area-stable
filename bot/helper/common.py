@@ -9,6 +9,7 @@ from pyrogram import Client
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.types import Message
 from secrets import token_urlsafe
+import aiofiles
 import aiohttp
 import os
 
@@ -405,13 +406,16 @@ class TaskConfig:
                         await _run(dirpath, video_file, outfile, clean_metadata)
 
     async def download_file(url, download_path):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                if response.status == 200:
-                    with open(download_path, 'wb') as f:
-                        f.write(await response.read())
-                else:
-                    raise Exception(f"Failed to download file: {response.status}")
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as response:
+                    if response.status == 200:
+                        async with aiofiles.open(download_path, mode='wb') as f:
+                            await f.write(await response.read())
+                    else:
+                        raise Exception(f"Failed to download file: HTTP {response.status}")
+        except Exception as e:
+            raise Exception(f"Failed to download file: {str(e)}")
 
     async def add_attachment(self, path: str, gid: str):
         # Check if there's an attachment specified in the user dictionary
