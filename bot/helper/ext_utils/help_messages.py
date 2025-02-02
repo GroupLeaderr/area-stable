@@ -9,8 +9,8 @@ class UsetString:
     CAP = f'''
 <b>CUSTOM CAPTION SETTING</b>\n
 Set custom caption with <b>HTML</b> style
-Example: <code>{escape("<b>By:</b> <a href='https://t.me/PBX1_BOTS'>PBX1</a>")}</code>
-Result: <b>By:</b> <a href='https://t.me/PBX1_BOTS'>PBX1</a>\n
+Example: <code>{escape("<b>By:</b> <a href='https://t.me/LeechFlix'>LeechFlix</a>")}</code>
+Result: <b>By:</b> <a href='https://t.me/LeechFlix'>LeechFlix</a>\n
 <i>*Be careful when you use html tag for caption\n
 Timeout: 60s.</i>
 '''
@@ -45,20 +45,20 @@ Timeout: 60s.</i>
 '''
     PRE = '''
 <b>PRENAME SETTING</b>\n
-Example: <b>@PBX1_BOTS -</b>\n
+Example: <b>@LeechFlix -</b>\n
 <b>Org Name:</b>
 <code>Ironman 1 (2008) [1080p].mkv</code>
 <b>Result:</b>
-<code>@PBX1_BOTS - Ironman 1 (2008) [1080p].mkv</code>\n
+<code>@LeechFlix - Ironman 1 (2008) [1080p].mkv</code>\n
 <i>Timeout: 60s.</i>
 '''
     SUF = '''
 <b>SUFNAME SETTING</b>\n
-Example: <b>- @PBX1_BOTS</b>\n
+Example: <b>- @LeechFlix</b>\n
 <b>Org Name:</b>
 <code>Ironman 1 (2008) [1080p].mkv</code>
 <b>Result:</b>
-<code>Ironman 1 (2008) [1080p] - @PBX1_BOTS.mkv</code>\n
+<code>Ironman 1 (2008) [1080p] - @LeechFlix.mkv</code>\n
 <i>Timeout: 60s.</i>
 '''
     SES = f'''
@@ -80,7 +80,7 @@ Example: <code>[</code><b>|</b><code>]</code><b>|</b> <code>-</code> <b>|</b> <c
 '''
     META = '''
 <b>METADATA SETTING</b>\n
-Send metadata title for video file like <b>Uploaded by @PBX1_BOTS</b>
+Send metadata title for video file like <b>Uploaded by @LeechFlix</b>
 <b>Current:</b> <code>{}</code>\n
 <i>Timeout: 60s.</i>
 '''

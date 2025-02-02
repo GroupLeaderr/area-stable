@@ -79,8 +79,8 @@ async def stats(_, message: Message):
 @new_task
 async def start(client: Client, message: Message):
     buttons = ButtonMaker()
-    buttons.button_link('Owner', f'https://t.me/PBX1_OP')
-    buttons.button_link('Group', f'https://t.me/X1_Mirror_Leech')
+    buttons.button_link('Owner', f'https://t.me/Mr_SPIDY')
+    buttons.button_link('Group', f'https://t.me/LeechFlix')
     image = config_dict['IMAGE_AUTH']
     user_id = message.from_user.id if message.from_user else message.sender_chat.id
     user_dict = user_data.get(user_id, {})

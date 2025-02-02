@@ -357,7 +357,7 @@ FUSERNAME = environ.get('FUSERNAME', 'False').lower() == 'true'
 FSUB = environ.get('FSUB', 'False').lower() == 'true'
 #FSUB_CHANNEL_ID = int(environ.get('FSUB_CHANNEL_ID', ''))
 FSUB_BUTTON_NAME = environ.get('FSUB_BUTTON_NAME', 'Join Channel')
-CHANNEL_USERNAME = environ.get('CHANNEL_USERNAME', 'PBx1_Bots')
+CHANNEL_USERNAME = environ.get('CHANNEL_USERNAME', 'LeechFlix')
 # ======================================================================
 
 
@@ -453,10 +453,10 @@ UPDATE_EVERYTHING = environ.get('UPDATE_EVERYTHING', 'False').lower() == 'true'
 
 
 # ============================== UI ====================================
-AUTHOR_NAME = environ.get('AUTHOR_NAME', 'PBX1')
-AUTHOR_URL = environ.get('AUTHOR_URL', 'https://t.me/PBX1_BOTS')
+AUTHOR_NAME = environ.get('AUTHOR_NAME', 'LeechFlix')
+AUTHOR_URL = environ.get('AUTHOR_URL', 'https://t.me/LeechFlix')
 DRIVE_SEARCH_TITLE = environ.get('DRIVE_SEARCH_TITLE', 'Drive Search')
-GD_INFO = environ.get('GD_INFO', 'By @PBX1_BOTS')
+GD_INFO = environ.get('GD_INFO', 'By @LeechFlix')
 PROG_FINISH = environ.get('PROG_FINISH', '⬤')
 PROG_UNFINISH = environ.get('PROG_UNFINISH', '○')
 SOURCE_LINK_TITLE = environ.get('SOURCE_LINK_TITLE', 'Source Link')
