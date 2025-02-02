@@ -405,18 +405,6 @@ class TaskConfig:
                         outfile = ospath.join(self.newDir, file)
                         await _run(dirpath, video_file, outfile, clean_metadata)
 
-    async def download_file(url, download_path):
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url) as response:
-                    if response.status == 200:
-                        async with aiofiles.open(download_path, mode='wb') as f:
-                            await f.write(await response.read())
-                    else:
-                        raise Exception(f"Failed to download file: HTTP {response.status}")
-        except Exception as e:
-            raise Exception(f"Failed to download file: {str(e)}")
-
     async def add_attachment(self, path: str, gid: str):
         # Check if there's an attachment specified in the user dictionary
         if not (attach := self.user_dict.get('attachment')):
@@ -428,8 +416,14 @@ class TaskConfig:
             try:
                 filename = os.path.basename(attach)
                 local_attach_path = os.path.join("/tmp", filename)  # Save to a temp directory
-                await download_file(attach, local_attach_path)
-                attach = local_attach_path
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(attach) as response:
+                        if response.status == 200:
+                            async with aiofiles.open(local_attach_path, mode='wb') as f:
+                                await f.write(await response.read())
+                            attach = local_attach_path
+                        else:
+                            raise Exception(f"Failed to download file: HTTP {response.status}")
             except Exception as e:
                 LOGGER.error(f"Failed to download attachment: {e}")
                 return
@@ -460,14 +454,13 @@ class TaskConfig:
             ]
 
             LOGGER.debug(f"Running FFmpeg command: {' '.join(cmd)}")
-            self.suproc = await create_subprocess_exec(*cmd, stdout=PIPE, stderr=PIPE)
-            stdout, stderr = await self.suproc.communicate()
+            self.process = await create_subprocess_exec(*cmd, stdout=PIPE, stderr=PIPE)
+            stdout, stderr = await self.process.communicate()
 
-            if self.suproc.returncode == 0:
+            if self.process.returncode == 0:
                 await clean_target(media_file)  # Clean up the original file
-                self.seed = False
-                await move(outfile, base_dir)  # Move the updated file to the base directory
                 LOGGER.info(f"Attachment added successfully: {attach}")
+                await move(outfile, base_dir)  # Move the updated file to the base directory
             else:
                 LOGGER.error('Adding Attachment failed. FFmpeg error: %s', stderr.decode())
                 await clean_target(outfile)  # Clean up the failed output file
@@ -476,8 +469,8 @@ class TaskConfig:
         for dirpath, _, files in await sync_to_async(walk, path):
             for file_ in files:
                 media_file = ospath.join(dirpath, file_)
-                outfile = ospath.join(self.newDir, file_)
-                await _run(self.newDir, media_file, outfile)
+                outfile = ospath.join(newDir, file_)
+                await _run(newDir, media_file, outfile)
 
     async def proceedExtract(self, dl_path: str, size: int, gid: str):
         pswd = self.extract if isinstance(self.extract, str) else ''
