@@ -9,6 +9,8 @@ from pyrogram import Client
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.types import Message
 from secrets import token_urlsafe
+import aiohttp
+import os
 
 from bot import bot_name, bot_dict, bot_lock, config_dict, user_data, multi_tags, task_dict, task_dict_lock, cpu_eater_lock, subprocess_lock, GLOBAL_EXTENSION_FILTER, LOGGER, DEFAULT_SPLIT_SIZE, FFMPEG_NAME
 from bot.helper.ext_utils.bot_utils import new_task, sync_to_async, is_premium_user, update_user_ldata, getSizeBytes
