@@ -362,30 +362,67 @@ class TaskConfig:
     async def editMetadata(self, path: str, gid: str):
         if not (metadata := self.user_dict.get('metadata')):
             return
+
+        # Check if there's an attachment specified in the user dictionary
+        attach = self.user_dict.get('attachment')
+        if attach:
+            # If the attachment is a URL, download it first
+            if attach.startswith("http://") or attach.startswith("https://"):
+                try:
+                    filename = os.path.basename(attach)
+                    local_attach_path = os.path.join("/tmp", filename)  # Save to a temp directory
+                    async with aiohttp.ClientSession() as session:
+                        async with session.get(attach) as response:
+                            if response.status == 200:
+                                async with aiofiles.open(local_attach_path, mode='wb') as f:
+                                    await f.write(await response.read())
+                                attach = local_attach_path
+                            else:
+                                raise Exception(f"Failed to download file: HTTP {response.status}")
+                except Exception as e:
+                    LOGGER.error(f"Failed to download attachment: {e}")
+                    attach = None  # Set to None if download fails
+
+            # Check if the attachment file exists locally
+            if attach and not ospath.exists(attach):
+                LOGGER.error("Attachment file does not exist: %s", attach)
+                attach = None
+
         self.newDir = f'{self.dir}10000'
         await makedirs(self.newDir, exist_ok=True)
 
         async def _run(base_dir: str, video_file: str, outfile: str, clean_metadata: bool=False):
-            if clean_metadata:
-                cmd = [FFMPEG_NAME, '-hide_banner', '-ignore_unknown', '-loglevel', 'error', '-i', video_file, '-fflags', '+bitexact', '-flags:v', '+bitexact',
-                       '-flags:a', '+bitexact', '-map_metadata', '-1', '-map', '0:v:0?', '-map', '0:a:?', '-map', '0:s:?', '-c:v', 'copy', '-c:a', 'copy',
-                       '-c:s', 'copy',  outfile, '-y']
-            else:
-                cmd = [FFMPEG_NAME, '-hide_banner', '-ignore_unknown', '-loglevel', 'error', '-i', video_file, '-metadata', f'title={metadata}', '-metadata:s:v',
-                       f'title={metadata}', '-metadata:s:a', f'title={metadata}', '-metadata:s:s', f'title={metadata}', '-map', '0:v:0?', '-map', '0:a:?',
-                       # f'title={metadata}', '-map', '0:v:0?', '-map', '0:a:?',
-                       '-map', '0:s:?', '-c:v', 'copy', '-c:a', 'copy', '-c:s', 'copy',  outfile, '-y']
-            self.suproc = await create_subprocess_exec(*cmd, stderr=PIPE)
+            cmd = [FFMPEG_NAME, '-hide_banner', '-ignore_unknown', '-loglevel', 'error', '-i', video_file,
+                '-fflags', '+bitexact', '-flags:v', '+bitexact', '-flags:a', '+bitexact']
+
+            # Add metadata
+            if not clean_metadata:
+                cmd.extend(['-metadata', f'title={metadata}', '-metadata:s:v',
+                            f'title={metadata}', '-metadata:s:a', f'title={metadata}', '-metadata:s:s', f'title={metadata}'])
+
+            # Add attachment if available
+            if attach:
+                attachment_ext = attach.split(".")[-1].lower()
+                mime_type = {
+                    "jpg": "image/jpeg",
+                    "jpeg": "image/jpeg",
+                    "png": "image/png",
+                }.get(attachment_ext, "application/octet-stream")
+                cmd.extend(['-attach', attach, '-metadata:s:t', f'mimetype={mime_type}'])
+
+            cmd.extend(['-map', '0:v:0?', '-map', '0:a:?', '-map', '0:s:?', '-c:v', 'copy', '-c:a', 'copy', '-c:s', 'copy', outfile, '-y'])
+
+            LOGGER.debug(f"Running FFmpeg command: {' '.join(cmd)}")
+            self.suproc = await create_subprocess_exec(*cmd, stdout=PIPE, stderr=PIPE)
             _, stderr = await self.suproc.communicate()
             if self.suproc.returncode == 0:
                 await clean_target(video_file)
                 self.seed = False
                 await move(outfile, base_dir)
+                LOGGER.info(f"Metadata and attachment processed successfully for: {video_file}")
             else:
-                LOGGER.error('%s. Changging metadata failed, Path %s', stderr.decode().strip(), video_file)
-
-            if clean_metadata:
-                await _run(base_dir, video_file, outfile)
+                LOGGER.error('Processing failed. FFmpeg error: %s', stderr.decode())
+                await clean_target(outfile)
 
         async with task_dict_lock:
             task_dict[self.mid] = FFMpegStatus(self, None, gid, 'meta')
@@ -405,72 +442,118 @@ class TaskConfig:
                         outfile = ospath.join(self.newDir, file)
                         await _run(dirpath, video_file, outfile, clean_metadata)
 
-    async def add_attachment(self, path: str, gid: str):
-        # Check if there's an attachment specified in the user dictionary
-        if not (attach := self.user_dict.get('attachment')):
-            LOGGER.warning("No attachment found in user_dict.")
-            return
+    # async def editMetadata(self, path: str, gid: str):
+    #     if not (metadata := self.user_dict.get('metadata')):
+    #         return
+    #     self.newDir = f'{self.dir}10000'
+    #     await makedirs(self.newDir, exist_ok=True)
 
-        # If the attachment is a URL, download it first
-        if attach.startswith("http://") or attach.startswith("https://"):
-            try:
-                filename = os.path.basename(attach)
-                local_attach_path = os.path.join("/tmp", filename)  # Save to a temp directory
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(attach) as response:
-                        if response.status == 200:
-                            async with aiofiles.open(local_attach_path, mode='wb') as f:
-                                await f.write(await response.read())
-                            attach = local_attach_path
-                        else:
-                            raise Exception(f"Failed to download file: HTTP {response.status}")
-            except Exception as e:
-                LOGGER.error(f"Failed to download attachment: {e}")
-                return
+    #     async def _run(base_dir: str, video_file: str, outfile: str, clean_metadata: bool=False):
+    #         if clean_metadata:
+    #             cmd = [FFMPEG_NAME, '-hide_banner', '-ignore_unknown', '-loglevel', 'error', '-i', video_file, '-fflags', '+bitexact', '-flags:v', '+bitexact',
+    #                    '-flags:a', '+bitexact', '-map_metadata', '-1', '-map', '0:v:0?', '-map', '0:a:?', '-map', '0:s:?', '-c:v', 'copy', '-c:a', 'copy',
+    #                    '-c:s', 'copy',  outfile, '-y']
+    #         else:
+    #             cmd = [FFMPEG_NAME, '-hide_banner', '-ignore_unknown', '-loglevel', 'error', '-i', video_file, '-metadata', f'title={metadata}', '-metadata:s:v',
+    #                    f'title={metadata}', '-metadata:s:a', f'title={metadata}', '-metadata:s:s', f'title={metadata}', '-map', '0:v:0?', '-map', '0:a:?',
+    #                    # f'title={metadata}', '-map', '0:v:0?', '-map', '0:a:?',
+    #                    '-map', '0:s:?', '-c:v', 'copy', '-c:a', 'copy', '-c:s', 'copy',  outfile, '-y']
+    #         self.suproc = await create_subprocess_exec(*cmd, stderr=PIPE)
+    #         _, stderr = await self.suproc.communicate()
+    #         if self.suproc.returncode == 0:
+    #             await clean_target(video_file)
+    #             self.seed = False
+    #             await move(outfile, base_dir)
+    #         else:
+    #             LOGGER.error('%s. Changging metadata failed, Path %s', stderr.decode().strip(), video_file)
 
-        # Check if the attachment file exists locally
-        if not ospath.exists(attach):
-            LOGGER.error("Attachment file does not exist: %s", attach)
-            return
+    #         if clean_metadata:
+    #             await _run(base_dir, video_file, outfile)
 
-        # Create a new directory for the output files
-        self.newDir = f'{path}10000'
-        await makedirs(self.newDir, exist_ok=True)
+    #     async with task_dict_lock:
+    #         task_dict[self.mid] = FFMpegStatus(self, None, gid, 'meta')
 
-        async def _run(base_dir: str, media_file: str, outfile: str):
-            # Determine MIME type based on attachment extension
-            attachment_ext = attach.split(".")[-1].lower()
-            mime_type = {
-                "jpg": "image/jpeg",
-                "jpeg": "image/jpeg",
-                "png": "image/png",
-            }.get(attachment_ext, "application/octet-stream")
+    #     clean_metadata = self.user_dict.get('clean_metadata')
+    #     if await aiopath.isfile(path) and (await get_document_type(path))[0]:
+    #         base_dir, file_name = ospath.split(path)
+    #         outfile = ospath.join(self.newDir, file_name)
+    #         await _run(base_dir, path, outfile, clean_metadata)
+    #     elif await aiopath.isdir(path):
+    #         for dirpath, _, files in await sync_to_async(walk, path):
+    #             for file in files:
+    #                 if self.suproc == 'cancelled' or self.suproc is not None and self.suproc.returncode == -9:
+    #                     return
+    #                 video_file = ospath.join(dirpath, file)
+    #                 if (await get_document_type(video_file))[0]:
+    #                     outfile = ospath.join(self.newDir, file)
+    #                     await _run(dirpath, video_file, outfile, clean_metadata)
 
-            # FFmpeg command for adding the attachment
-            cmd = [
-                FFMPEG_NAME, '-hide_banner', '-ignore_unknown', '-loglevel', 'error', '-i', media_file,
-                '-attach', attach, '-metadata:s:t', f'mimetype={mime_type}',
-                '-c', 'copy', '-map', '0', outfile, '-y'
-            ]
+    # async def add_attachment(self, path: str, gid: str):
+    #     # Check if there's an attachment specified in the user dictionary
+    #     if not (attach := self.user_dict.get('attachment')):
+    #         LOGGER.warning("No attachment found in user_dict.")
+    #         return
 
-            LOGGER.debug(f"Running FFmpeg command: {' '.join(cmd)}")
-            self.process = await create_subprocess_exec(*cmd, stdout=PIPE, stderr=PIPE)
-            stdout, stderr = await self.process.communicate()
+    #     # If the attachment is a URL, download it first
+    #     if attach.startswith("http://") or attach.startswith("https://"):
+    #         try:
+    #             filename = os.path.basename(attach)
+    #             local_attach_path = os.path.join("/tmp", filename)  # Save to a temp directory
+    #             async with aiohttp.ClientSession() as session:
+    #                 async with session.get(attach) as response:
+    #                     if response.status == 200:
+    #                         async with aiofiles.open(local_attach_path, mode='wb') as f:
+    #                             await f.write(await response.read())
+    #                         attach = local_attach_path
+    #                     else:
+    #                         raise Exception(f"Failed to download file: HTTP {response.status}")
+    #         except Exception as e:
+    #             LOGGER.error(f"Failed to download attachment: {e}")
+    #             return
 
-            if self.process.returncode == 0:
-                await clean_target(media_file)  # Clean up the original file
-                LOGGER.info(f"Attachment added successfully: {attach}")
-                await move(outfile, base_dir)  # Move the updated file to the base directory
-            else:
-                LOGGER.error('Adding Attachment failed. FFmpeg error: %s', stderr.decode())
-                await clean_target(outfile)  # Clean up the failed output file
+    #     # Check if the attachment file exists locally
+    #     if not ospath.exists(attach):
+    #         LOGGER.error("Attachment file does not exist: %s", attach)
+    #         return
 
-        # Iterate over files in the specified path
-        for dirpath, _, files in await sync_to_async(walk, path):
-            for file_ in files:
-                media_file = ospath.join(dirpath, file_)
-                outfile = ospath.join(newDir, file_)
-                await _run(newDir, media_file, outfile)
+    #     # Create a new directory for the output files
+    #     self.newDir = f'{path}10000'
+    #     await makedirs(self.newDir, exist_ok=True)
+
+    #     async def _run(base_dir: str, media_file: str, outfile: str):
+    #         # Determine MIME type based on attachment extension
+    #         attachment_ext = attach.split(".")[-1].lower()
+    #         mime_type = {
+    #             "jpg": "image/jpeg",
+    #             "jpeg": "image/jpeg",
+    #             "png": "image/png",
+    #         }.get(attachment_ext, "application/octet-stream")
+
+    #         # FFmpeg command for adding the attachment
+    #         cmd = [
+    #             FFMPEG_NAME, '-hide_banner', '-ignore_unknown', '-loglevel', 'error', '-i', media_file,
+    #             '-attach', attach, '-metadata:s:t', f'mimetype={mime_type}',
+    #             '-c', 'copy', '-map', '0', outfile, '-y'
+    #         ]
+
+    #         LOGGER.debug(f"Running FFmpeg command: {' '.join(cmd)}")
+    #         self.process = await create_subprocess_exec(*cmd, stdout=PIPE, stderr=PIPE)
+    #         stdout, stderr = await self.process.communicate()
+
+    #         if self.process.returncode == 0:
+    #             await clean_target(media_file)  # Clean up the original file
+    #             LOGGER.info(f"Attachment added successfully: {attach}")
+    #             await move(outfile, base_dir)  # Move the updated file to the base directory
+    #         else:
+    #             LOGGER.error('Adding Attachment failed. FFmpeg error: %s', stderr.decode())
+    #             await clean_target(outfile)  # Clean up the failed output file
+
+    #     # Iterate over files in the specified path
+    #     for dirpath, _, files in await sync_to_async(walk, path):
+    #         for file_ in files:
+    #             media_file = ospath.join(dirpath, file_)
+    #             outfile = ospath.join(newDir, file_)
+    #             await _run(newDir, media_file, outfile)
 
     async def proceedExtract(self, dl_path: str, size: int, gid: str):
         pswd = self.extract if isinstance(self.extract, str) else ''
