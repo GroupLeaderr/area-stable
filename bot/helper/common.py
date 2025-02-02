@@ -412,6 +412,7 @@ class TaskConfig:
                 '-metadata', 'AUTHOR=',
                 '-metadata', 'SUMMARY=',
                 '-metadata', 'WEBSITE=',
+                '-metadata', 'DATE=',
                 '-metadata', 'Encoded_by=',
 
                 # Copy streams without re-encoding

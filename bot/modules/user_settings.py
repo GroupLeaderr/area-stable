@@ -75,10 +75,13 @@ async def get_user_settings(from_user, data: str, uset_data: str):
         rccmsg, buttonkey = ('EXISTS ✅', '✅ RClone') if await aiopath.exists(rclone_path) else ('NOT SET', 'RClone')
         buttons.button_data(buttonkey, f'userset {user_id} rctool')
 
+        capmode = user_dict.get('caption_style', 'mono')
+        buttons.button_data('✅ Caption' if user_dict.get('captions') else 'Caption', f'userset {user_id} capmode')
+
         metadata, buttonkey = ('ENABLE ✅', '✅ Metadata') if user_dict.get('metadata') else ('DISABLE', 'Metadata')
         buttons.button_data(buttonkey, f'userset {user_id} setdata metadata')
 
-        metadata, buttonkey = ('ENABLE ✅', '✅ Attachment') if user_dict.get('attachment') else ('DISABLE', 'Attachment')
+        attachment, buttonkey = ('ENABLE ✅', '✅ Attachment') if user_dict.get('attachment') else ('DISABLE', 'Attachment')
         buttons.button_data(buttonkey, f'userset {user_id} setdata attachment')
 
         default_upload = user_dict.get('default_upload', '') or config_dict['DEFAULT_UPLOAD']
@@ -96,9 +99,6 @@ async def get_user_settings(from_user, data: str, uset_data: str):
             buttonkey = 'YT-DLP'
             yto = '<b>NOT SET</b>'
         buttons.button_data(buttonkey, f'userset {user_id} setdata yt_opt')
-
-        capmode = user_dict.get('caption_style', 'mono')
-        buttons.button_data('✅ Caption' if user_dict.get('captions') else 'Caption', f'userset {user_id} capmode')
 
         buttons.button_data('Zip Mode', f'userset {user_id} zipmode')
 
