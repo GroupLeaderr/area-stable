@@ -172,7 +172,7 @@ DOWNLOAD_DIR = environ.get('DOWNLOAD_DIR', '/usr/src/app/downloads/')
 if not DOWNLOAD_DIR.endswith('/'):
     DOWNLOAD_DIR += '/'
 
-GDRIVE_ID = environ.get('GDRIVE_ID', '0AOIjN1u1lhaiUk9PVA')
+GDRIVE_ID = environ.get('GDRIVE_ID', '1CmEEnrfAJB3l7ZRkCUy1fBtWIJzyAwUS')
 CLOUD_LINK_FILTERS = environ.get('CLOUD_LINK_FILTERS', 'mypikpak.com')
 RCLONE_PATH = environ.get('RCLONE_PATH', 'MAIN:DL')
 RCLONE_FLAGS = environ.get('RCLONE_FLAGS', '')
@@ -219,11 +219,11 @@ STREAM_BASE_URL = environ.get('STREAM_BASE_URL', '').rstrip('/')
 STREAM_PORT = environ.get('STREAM_PORT', '')
 QUEUE_COMPLETE = environ.get('QUEUE_COMPLETE', 'True').lower() == 'true'
 DISABLE_MIRROR_LEECH = environ.get('DISABLE_MIRROR_LEECH', '')
-INDEX_URL = environ.get('INDEX_URL', '').rstrip('/')
+INDEX_URL = environ.get('INDEX_URL', 'https://leechflix.spidybro.workers.dev/0:/LeechFlix').rstrip('/')
 INCOMPLETE_TASK_NOTIFIER = environ.get('INCOMPLETE_TASK_NOTIFIER', 'True').lower() == 'true'
 INCOMPLETE_AUTO_RESUME = environ.get('INCOMPLETE_AUTO_RESUME', 'True').lower() == 'true'
 USE_SERVICE_ACCOUNTS = environ.get('USE_SERVICE_ACCOUNTS', 'False').lower() == 'true'
-CMD_SUFFIX = environ.get('CMD_SUFFIX', '')
+CMD_SUFFIX = environ.get('CMD_SUFFIX', '4')
 DATABASE_URL = environ.get('DATABASE_URL', 'mongodb+srv://Leechflix3:Leechflix3@cluster0.pfzib.mongodb.net/?retryWrites=true&w=majority')
 AUTO_THUMBNAIL = environ.get('AUTO_THUMBNAIL', 'True').lower() == 'true'
 PREMIUM_MODE = environ.get('PREMIUM_MODE', 'True').lower() == 'true'
