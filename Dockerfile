@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 RUN chmod 777 /usr/src/app
 
 # Install dependencies
-RUN apt-get update && apt-get install -y wget aria2 && \
+RUN apt-get update && apt-get install -y wget aria2 qbittorrent-nox && \
     wget -O /tmp/qbittorrent-nox.deb http://ftp.de.debian.org/debian/pool/main/q/qbittorrent/qbittorrent-nox_4.5.2-3+deb12u1_amd64.deb && \
     dpkg -i /tmp/qbittorrent-nox.deb || apt-get -f install -y && \
     rm -f /tmp/qbittorrent-nox.deb
