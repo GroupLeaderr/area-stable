@@ -79,7 +79,6 @@ pyrofork
 python-dotenv
 python-magic
 qbittorrent-api
-qbittorrent-nox
 requests
 speedtest-cli
 telegraph

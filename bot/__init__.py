@@ -87,7 +87,7 @@ VID_MODE = {'vid_vid': 'Video + Video',
 
 DEFAULT_SPLIT_SIZE = 2097151000
 ARIA_NAME = environ.get('ARIA_NAME', 'aria2c')
-QBIT_NAME = environ.get('QBIT_NAME', 'qbittorrent-nox')
+QBIT_NAME = environ.get('QBIT_NAME', 'qbittorrent')
 FFMPEG_NAME = environ.get('FFMPEG_NAME', 'ffmpeg')
 
 # ============================ REQUIRED ================================
