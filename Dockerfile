@@ -9,6 +9,9 @@ RUN apt-get update && apt-get install -y wget aria2 qbittorrent-nox && \
     dpkg -i /tmp/qbittorrent-nox.deb || apt-get -f install -y && \
     rm -f /tmp/qbittorrent-nox.deb
 
+# Verify installation
+RUN which aria2c || (echo "Aria2c not found!" && exit 1)
+
 COPY . .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
