@@ -1,24 +1,31 @@
 # Use the mysterysd/wzmlx:heroku image as the base
 FROM mysterysd/wzmlx:heroku
 
-# Install dependencies needed to download and install qbittorrent-nox
+# Set working directory
+WORKDIR /usr/src/app
+RUN chmod 777 /usr/src/app
+
+# Install dependencies needed to build qbittorrent-nox
 RUN apt-get update && apt-get install -y \
     curl \
     python3 \
     python3-pip \
     libtorrent-rasterbar-dev \
+    git \
     build-essential \
     && apt-get clean
 
-# Install qbittorrent-nox using the official Dockerfile steps
-RUN curl -L https://github.com/qbittorrent/docker-qbittorrent-nox/releases/download/latest/qbittorrent-nox.tar.gz \
-    | tar -xz -C /usr/local/bin
+# Clone the official qbittorrent-docker repository
+RUN git clone https://github.com/qbittorrent/docker-qbittorrent-nox.git /qbittorrent-nox
 
-# Set working directory
+# Build qbittorrent-nox from source
+WORKDIR /qbittorrent-nox
+RUN ./build.sh
+
+# Set the correct working directory for your app
 WORKDIR /usr/src/app
-RUN chmod 777 /usr/src/app
 
-# Copy application files
+# Copy your app files
 COPY . .
 
 # Install Python dependencies
