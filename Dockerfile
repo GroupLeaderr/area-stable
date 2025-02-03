@@ -1,4 +1,4 @@
-FROM maheshkadali/rb1
+FROM maheshkadali/anime-leech
 
 WORKDIR /usr/src/app
 RUN chmod 777 /usr/src/app
