@@ -13,14 +13,22 @@ RUN apt-get update && apt-get install -y \
     libtorrent-rasterbar-dev \
     git \
     build-essential \
+    cmake \
+    pkg-config \
+    libssl-dev \
+    zlib1g-dev \
+    libboost-all-dev \
     && apt-get clean
 
-# Clone the official qbittorrent-docker repository
-RUN git clone https://github.com/qbittorrent/docker-qbittorrent-nox.git /qbittorrent-nox
+# Clone the official qbittorrent repository
+RUN git clone https://github.com/qbittorrent/qBittorrent.git /qbittorrent
 
 # Build qbittorrent-nox from source
-WORKDIR /qbittorrent-nox
-RUN ./build.sh
+WORKDIR /qbittorrent
+RUN git submodule update --init --recursive && \
+    ./configure --prefix=/usr && \
+    make && \
+    make install
 
 # Set the correct working directory for your app
 WORKDIR /usr/src/app
