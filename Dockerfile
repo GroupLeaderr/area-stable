@@ -1,10 +1,9 @@
-FROM 5hojib/aeon:latest
+FROM mysterysd/wzmlx:heroku
 
 WORKDIR /usr/src/app
 RUN chmod 777 /usr/src/app
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
 COPY . .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
 CMD ["bash", "start.sh"]
