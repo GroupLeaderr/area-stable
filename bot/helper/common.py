@@ -640,12 +640,12 @@ class TaskConfig:
             up_path = dl_path
 
         up_path = await self.preName(up_path)
-        await self.editMetadata(up_path, gid)
+        # await self.editMetadata(up_path, gid)
         return up_path
 
     async def proceedCompress(self, dl_path: str, size: int, gid: str):
         dl_path = await self.preName(dl_path)
-        await self.editMetadata(dl_path, gid)
+        # await self.editMetadata(dl_path, gid)
         self.name = ospath.basename(dl_path)
         zipmode = self.user_dict.get('zipmode', 'zfolder')
         zfpart = ''

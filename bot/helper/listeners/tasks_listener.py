@@ -147,7 +147,7 @@ class TaskListener(TaskConfig):
 
         if not self.compress and not self.extract:
             up_path = await self.preName(up_path)
-            await self.editMetadata(up_path, gid)
+            # await self.editMetadata(up_path, gid)
 
         if one_path := await self.isOneFile(up_path):
             up_path = one_path
@@ -186,6 +186,7 @@ class TaskListener(TaskConfig):
                 return
 
         if self.isLeech:
+            await self.editMetadata(up_path, gid)
             for s in m_size:
                 size -= s
             LOGGER.info('Leech Name: %s', self.name)
