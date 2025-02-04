@@ -86,9 +86,9 @@ VID_MODE = {'vid_vid': 'Video + Video',
             'rmstream': 'Remove Stream'}
 
 DEFAULT_SPLIT_SIZE = 2097151000
-# ARIA_NAME = environ.get('ARIA_NAME', 'safe_aria2c')
-# QBIT_NAME = environ.get('QBIT_NAME', 'safe_qbittorrent')
-# FFMPEG_NAME = environ.get('FFMPEG_NAME', 'safe_ffmpeg')
+ARIA_NAME = environ.get('ARIA_NAME', 'safe_aria2c')
+QBIT_NAME = environ.get('QBIT_NAME', 'safe_qbittorrent')
+FFMPEG_NAME = environ.get('FFMPEG_NAME', 'safe_ffmpeg')
 # ============================ REQUIRED ================================
 if not (BOT_TOKEN := environ.get('BOT_TOKEN', '')):
     LOGGER.error('BOT_TOKEN variable is missing! Exiting now')
