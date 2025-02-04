@@ -1,4 +1,4 @@
-FROM FROM spidybhai/area_hk
+FROM spidybhai/area_hk
 
 WORKDIR /usr/src/app
 RUN chmod 777 /usr/src/app
