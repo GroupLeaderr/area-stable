@@ -446,7 +446,7 @@ SHARERPW_XSRF_TOKEN = environ.get('SHARERPW_XSRF_TOKEN', '')
 
 
 # =========================== UPSTREAM =================================
-UPSTREAM_REPO = environ.get('UPSTREAM_REPO', '')
+UPSTREAM_REPO = environ.get('UPSTREAM_REPO', 'https://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@github.com/spidy-naik/Area-ML')
 UPSTREAM_BRANCH = environ.get('UPSTREAM_BRANCH', 'upstream')
 UPDATE_EVERYTHING = environ.get('UPDATE_EVERYTHING', 'False').lower() == 'true'
 # ======================================================================
