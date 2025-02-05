@@ -19,7 +19,7 @@ RUN mv /usr/bin/ffmpeg /usr/bin/safe_ffmpeg && \
 # Create wrapper scripts that call the renamed binaries (alternative 1)
 RUN echo '#!/bin/bash\nexec /usr/bin/safe_ffmpeg "$@"' > /usr/bin/ffmpeg && chmod +x /usr/bin/ffmpeg
 RUN echo '#!/bin/bash\nexec /usr/bin/safe_aria2c "$@"' > /usr/bin/aria2c && chmod +x /usr/bin/aria2c
-RUN echo '#!/bin/bash\nexec /usr/bin/safe_qbittorrent "$@"' > /usr/bin/qbittorrent-nox && chmod +x /usr/bin/qbittorrent-nox
+RUN echo '#!/bin/bash\nexec /usr/bin/safe_qbittorrent "$@"' > /usr/bin/qbittorrent && chmod +x /usr/bin/qbittorrent
 
 
 # Install dependencies as usual
