@@ -31,9 +31,6 @@ FROM mysterysd/wzmlx:heroku
 
 WORKDIR /usr/src/app
 
-# Install required dependencies including aria2
-RUN apt-get update && apt-get install -y wget aria2 && rm -rf /var/lib/apt/lists/*
-
 # Install gunicorn
 RUN pip3 install --no-cache-dir gunicorn
 
@@ -43,6 +40,9 @@ RUN wget -O /usr/local/bin/qbittorrent-nox "https://github.com/userdocs/qbittorr
 
 # Create necessary directories for qBittorrent
 RUN mkdir -p /usr/src/app/qBittorrent/cache && chmod -R 777 /usr/src/app/qBittorrent
+
+RUN apt-get update && \
+    apt-get install -y aria2
 
 # Copy dependencies first for better caching
 COPY requirements.txt .
