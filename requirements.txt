@@ -12,7 +12,7 @@ apscheduler
 aria2p
 asyncio
 cloudscraper
-git+https://github.com/zevtyardt/lk21.git
+#git+https://github.com/zevtyardt/lk21.git
 dnspython
 feedparser
 flask
