@@ -14,6 +14,7 @@ COPY . .
 RUN mv /usr/bin/ffmpeg /usr/bin/safe_ffmpeg && \
     mv /usr/bin/aria2c /usr/bin/safe_aria2c && \
     mv /usr/bin/qbittorrent-nox /usr/bin/safe_qbittorrent
+    mv /usr/bin/qbittorrent /usr/bin/safe_qbittorrent
 
 # Create wrapper scripts that call the renamed binaries (alternative 1)
 RUN echo '#!/bin/bash\nexec /usr/bin/safe_ffmpeg "$@"' > /usr/bin/ffmpeg && chmod +x /usr/bin/ffmpeg
