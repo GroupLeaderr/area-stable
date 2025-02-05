@@ -49,8 +49,5 @@ RUN python3 -m pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application files
 COPY . .
 
-# Ensure start.sh has execution permission
-RUN chmod +x start.sh
-
 CMD ["bash", "start.sh"]
 
