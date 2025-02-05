@@ -31,16 +31,18 @@ FROM mysterysd/wzmlx:heroku
 
 WORKDIR /usr/src/app
 
-# Install wget and dependencies
+# Install required dependencies
 RUN apt-get update && apt-get install -y wget && rm -rf /var/lib/apt/lists/*
+
+# Install gunicorn
+RUN pip3 install --no-cache-dir gunicorn
 
 # Download qbittorrent-nox static binary
 RUN wget -O /usr/local/bin/qbittorrent-nox "https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/x86_64-qbittorrent-nox" && \
     chmod +x /usr/local/bin/qbittorrent-nox
 
-# Create a non-root user for security
-RUN useradd -m appuser && chown -R appuser /usr/src/app
-USER appuser
+# Create necessary directories for qBittorrent
+RUN mkdir -p /usr/src/app/qBittorrent/cache && chmod -R 777 /usr/src/app/qBittorrent
 
 # Copy dependencies first for better caching
 COPY requirements.txt .
