@@ -31,8 +31,8 @@ FROM mysterysd/wzmlx:heroku
 
 WORKDIR /usr/src/app
 
-# Install required dependencies
-RUN apt-get update && apt-get install -y wget && rm -rf /var/lib/apt/lists/*
+# Install required dependencies including aria2
+RUN apt-get update && apt-get install -y wget aria2 && rm -rf /var/lib/apt/lists/*
 
 # Install gunicorn
 RUN pip3 install --no-cache-dir gunicorn
@@ -52,4 +52,3 @@ RUN python3 -m pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 CMD ["bash", "start.sh"]
-
