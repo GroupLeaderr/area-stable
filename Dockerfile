@@ -30,10 +30,27 @@
 FROM mysterysd/wzmlx:heroku
 
 WORKDIR /usr/src/app
-RUN chmod 777 /usr/src/app
 
+# Install wget and dependencies
+RUN apt-get update && apt-get install -y wget && rm -rf /var/lib/apt/lists/*
+
+# Download qbittorrent-nox static binary
+RUN wget -O /usr/local/bin/qbittorrent-nox "https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/x86_64-qbittorrent-nox" && \
+    chmod +x /usr/local/bin/qbittorrent-nox
+
+# Create a non-root user for security
+RUN useradd -m appuser && chown -R appuser /usr/src/app
+USER appuser
+
+# Copy dependencies first for better caching
+COPY requirements.txt .
+RUN python3 -m pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application files
 COPY . .
-RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Ensure start.sh has execution permission
+RUN chmod +x start.sh
 
 CMD ["bash", "start.sh"]
 
