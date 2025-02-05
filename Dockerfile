@@ -27,7 +27,7 @@
 # # Set the default command to run the start script
 # CMD ["bash", "start.sh"]
 
-FROM FROM mysterysd/wzmlx:heroku
+FROM mysterysd/wzmlx:heroku
 
 WORKDIR /usr/src/app
 RUN chmod 777 /usr/src/app
