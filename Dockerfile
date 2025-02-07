@@ -54,15 +54,13 @@
 # CMD ["bash", "start.sh"]
 
 # Use an existing image as the base
+# FROM admin44449999/ffmpeg
 FROM mysterysd/wzmlx:latest
 
 WORKDIR /usr/src/app
-
 RUN chmod 777 /usr/src/app
 
 COPY . .
-# Install dependencies as usual
-RUN pip3 install -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Set the default command to run the start script
 CMD ["bash", "start.sh"]
