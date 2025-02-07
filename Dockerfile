@@ -27,28 +27,42 @@
 # # Set the default command to run the start script
 # CMD ["bash", "start.sh"]
 
-FROM mysterysd/wzmlx:heroku
+# FROM mysterysd/wzmlx:heroku
+
+# WORKDIR /usr/src/app
+
+# # Install gunicorn
+# RUN pip3 install --no-cache-dir gunicorn
+
+# # Download qbittorrent-nox static binary
+# RUN wget -O /usr/local/bin/qbittorrent-nox "https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/x86_64-qbittorrent-nox" && \
+#     chmod +x /usr/local/bin/qbittorrent-nox
+
+# # Create necessary directories for qBittorrent
+# RUN mkdir -p /usr/src/app/qBittorrent/cache && chmod -R 777 /usr/src/app/qBittorrent
+
+# RUN apt-get update && \
+#     apt-get install -y aria2
+
+# # Copy dependencies first for better caching
+# COPY requirements.txt .
+# RUN python3 -m pip install --no-cache-dir -r requirements.txt
+
+# # Copy the rest of the application files
+# COPY . .
+
+# CMD ["bash", "start.sh"]
+
+# Use an existing image as the base
+FROM mysterysd/wzmlx:latest
 
 WORKDIR /usr/src/app
 
-# Install gunicorn
-RUN pip3 install --no-cache-dir gunicorn
+RUN chmod 777 /usr/src/app
 
-# Download qbittorrent-nox static binary
-RUN wget -O /usr/local/bin/qbittorrent-nox "https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/x86_64-qbittorrent-nox" && \
-    chmod +x /usr/local/bin/qbittorrent-nox
-
-# Create necessary directories for qBittorrent
-RUN mkdir -p /usr/src/app/qBittorrent/cache && chmod -R 777 /usr/src/app/qBittorrent
-
-RUN apt-get update && \
-    apt-get install -y aria2
-
-# Copy dependencies first for better caching
-COPY requirements.txt .
-RUN python3 -m pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application files
 COPY . .
+# Install dependencies as usual
+RUN pip3 install -r requirements.txt
 
+# Set the default command to run the start script
 CMD ["bash", "start.sh"]
