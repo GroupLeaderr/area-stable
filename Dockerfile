@@ -3,6 +3,7 @@ FROM spidybhai/mleech:latest
 WORKDIR /usr/src/app
 RUN chmod 777 /usr/src/app
 
+# Install required packages including aria2
 RUN apt-get update && apt-get install -y --no-install-recommends \
     aria2 curl zstd git libmagic-dev \
     locales mediainfo neofetch p7zip-full \
@@ -13,10 +14,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcrypto++-dev libc-ares-dev libsqlite3-dev \
     libfreeimage-dev swig libboost-all-dev \
     libpthread-stubs0-dev zlib1g-dev && \
+    mkdir -p /usr/src/app/bin && \
+    mv /usr/bin/aria2c /usr/src/app/bin/xria && \
+    chmod +x /usr/src/app/bin/xria && \
     rm -rf /var/lib/apt/lists/*
-
-RUN mv /usr/bin/aria2c /usr/src/app/bin/xria && \
-    chmod +x /usr/src/app/bin/xria
 
 RUN ARCH=$(uname -m) && \
     mkdir -p /usr/src/app/bin && \
