@@ -1,66 +1,49 @@
-# # Use an existing image as the base
-# FROM mysterysd/wzmlx:latest
-
-# # Set the working directory
-# WORKDIR /usr/src/app
-
-# # Make the app directory writable (if required)
-# RUN chmod 777 /usr/src/app
-
-# # Copy all files from the current directory to the container
-# COPY . .
-
-# # Rename the binaries and create wrapper scripts (alternative 1)
-# RUN mv /usr/bin/ffmpeg /usr/bin/safe_ffmpeg && \
-#     mv /usr/bin/aria2c /usr/bin/safe_aria2c && \
-#     mv /usr/bin/qbittorrent-nox /usr/bin/safe_qbittorrent
-
-# # Create wrapper scripts that call the renamed binaries (alternative 1)
-# RUN echo '#!/bin/bash\nexec /usr/bin/safe_ffmpeg "$@"' > /usr/bin/ffmpeg && chmod +x /usr/bin/ffmpeg
-# RUN echo '#!/bin/bash\nexec /usr/bin/safe_aria2c "$@"' > /usr/bin/aria2c && chmod +x /usr/bin/aria2c
-# RUN echo '#!/bin/bash\nexec /usr/bin/safe_qbittorrent "$@"' > /usr/bin/qbittorrent-nox && chmod +x /usr/bin/qbittorrent-nox
-
-
-# # Install dependencies as usual
-# RUN pip3 install -r requirements.txt
-
-# # Set the default command to run the start script
-# CMD ["bash", "start.sh"]
-
-# FROM mysterysd/wzmlx:heroku
-
-# WORKDIR /usr/src/app
-
-# # Install gunicorn
-# RUN pip3 install --no-cache-dir gunicorn
-
-# # Download qbittorrent-nox static binary
-# RUN wget -O /usr/local/bin/qbittorrent-nox "https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/x86_64-qbittorrent-nox" && \
-#     chmod +x /usr/local/bin/qbittorrent-nox
-
-# # Create necessary directories for qBittorrent
-# RUN mkdir -p /usr/src/app/qBittorrent/cache && chmod -R 777 /usr/src/app/qBittorrent
-
-# RUN apt-get update && \
-#     apt-get install -y aria2
-
-# # Copy dependencies first for better caching
-# COPY requirements.txt .
-# RUN python3 -m pip install --no-cache-dir -r requirements.txt
-
-# # Copy the rest of the application files
-# COPY . .
-
-# CMD ["bash", "start.sh"]
-
-# Use an existing image as the base
-# FROM admin44449999/ffmpeg
-FROM mysterysd/wzmlx:latest
+FROM spidybhai/mleech:latest
 
 WORKDIR /usr/src/app
 RUN chmod 777 /usr/src/app
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    aria2 curl zstd git libmagic-dev \
+    locales mediainfo neofetch p7zip-full \
+    p7zip-rar tzdata wget autoconf automake \
+    build-essential cmake g++ gcc gettext \
+    gpg-agent intltool libtool make unzip zip \
+    libcurl4-openssl-dev libsodium-dev libssl-dev \
+    libcrypto++-dev libc-ares-dev libsqlite3-dev \
+    libfreeimage-dev swig libboost-all-dev \
+    libpthread-stubs0-dev zlib1g-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN mv /usr/bin/aria2c /usr/src/app/bin/xria && \
+    chmod +x /usr/src/app/bin/xria
+
+RUN ARCH=$(uname -m) && \
+    mkdir -p /usr/src/app/bin && \
+    case "$ARCH" in \
+        x86_64) wget -qO /usr/src/app/bin/xnox https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/x86_64-qbittorrent-nox ;; \
+        aarch64) wget -qO /usr/src/app/bin/xnox https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/aarch64-qbittorrent-nox ;; \
+        *) echo "Unsupported architecture for qbittorrent-nox: $ARCH" && exit 1 ;; \
+    esac && \
+    chmod 700 /usr/src/app/bin/xnox
+
+RUN ARCH=$(uname -m) && \
+    mkdir -p /Temp && \
+    cd /Temp && \
+    case "$ARCH" in \
+        x86_64) wget https://github.com/5hojib/FFmpeg-Builds/releases/download/latest/ffmpeg-n7.1-latest-linux64-gpl-7.1.tar.xz ;; \
+        aarch64) wget https://github.com/5hojib/FFmpeg-Builds/releases/download/latest/ffmpeg-n7.1-latest-linuxarm64-gpl-7.1.tar.xz ;; \
+        *) echo "Unsupported architecture for FFmpeg: $ARCH" && exit 1 ;; \
+    esac && \
+    7z x ffmpeg-n7.1-latest-linux*-gpl-7.1.tar.xz && \
+    7z x ffmpeg-n7.1-latest-linux*-gpl-7.1.tar && \
+    mv /Temp/ffmpeg-n7.1-latest-linux*/bin/ffmpeg /usr/src/app/bin/xtra && \
+    mv /Temp/ffmpeg-n7.1-latest-linux*/bin/ffprobe /usr/src/app/bin/ffprobe && \
+    mv /Temp/ffmpeg-n7.1-latest-linux*/bin/ffplay /usr/src/app/bin/ffplay && \
+    chmod +x /usr/src/app/bin/xtra /usr/src/app/bin/ffprobe /usr/src/app/bin/ffplay
+
 COPY . .
+
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 CMD ["bash", "start.sh"]
