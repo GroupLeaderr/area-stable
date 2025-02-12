@@ -12,6 +12,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . -t spidybhai/mleech2
+      run: docker build . -t spidybhai/mleech
     - name: login
-      run: docker login -u spidybhai -p DockerHub@69 && docker push spidybhai/mleech2
+      run: docker login -u spidybhai -p DockerHub@69 && docker push spidybhai/mleech
